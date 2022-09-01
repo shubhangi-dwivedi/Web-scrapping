@@ -49,6 +49,7 @@ def find_jobs():
             more_info=job.header.h2.a['href'] #gettinf the href value i.e. link
 
             if unfamilar_skill not in skills:
+                #stroring result in text files
                 with open(f'job_posts/{index}.txt', 'w') as f:
                     f.write(f'Company name : {company_name.strip()}\n')
                     f.write(f'Skills : {skills.strip()}\n')
