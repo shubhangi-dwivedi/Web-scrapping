@@ -1,0 +1,69 @@
+from bs4 import BeautifulSoup
+import requests as rq
+from openpyxl.reader.excel import load_workbook
+import operator
+import xlsxwriter
+
+
+file1 = load_workbook(filename='python_job_records.xlsx')
+ws=file1['skills_records']
+
+start_col = 1
+end_col = 1
+
+for i in range(2, ws.max_row+1):
+    row = [cell.value for cell in ws[i][start_col:end_col+1]]
+    print(row)
+
+    string1=' '.join(row)
+    print(string1)
+
+    skill=string1
+    print(skill)
+    workbook= xlsxwriter.Workbook("job_record_"+skill+".xlsx")
+    worksheet= workbook.add_worksheet(skill+"_jobs")
+
+    worksheet.write(0,0,'#')
+    worksheet.write(0,1,'Company_name')
+    worksheet.write(0,2,'skills')
+    worksheet.write(0,3,'more_info')
+    worksheet.write(0,4,'description')
+
+    url = 'https://www.timesjobs.com/candidate/job-search.html?from=submit&actualTxtKeywords='+skill+'&searchBy=0&rdoOperator=OR&searchType=personalizedSearch&luceneResultSize=25&postWeek=60&txtKeywords='+skill+'&pDate=I&sequence='
+    pg = 0
+
+    print(url)
+
+
+    for page in range(1, 10):
+
+        #print(page)
+        html_text = rq.get(url + str(page) + '&startPage=1').text
+
+        soup = BeautifulSoup(html_text, 'lxml')
+        jobs = soup.find_all('li', class_='clearfix job-bx wht-shd-bx')
+
+        #print(pg)
+        if page > 1:
+            pg += 25
+
+        for index, job in enumerate(jobs):
+            #print(pg)
+
+            if job.find('h3', class_='joblist-comp-name'):
+                company_name = job.find('h3', class_='joblist-comp-name').text.replace(' ', '')
+
+            if job.find('h2', class_='joblist-comp-name'):
+                company_name = job.find('h2', class_='joblist-comp-name').text.replace(' ', '')
+
+            skills = job.find('span', class_='srp-skills').text.replace(' ', '')
+            job_descrp = job.find('ul', class_='list-job-dtl clearfix').text.replace(' ', '')
+            more_info = job.header.h2.a['href']  # getting the href value i.e. link
+
+            worksheet.write(pg + index + 1, 0, str(index + 1 + pg))
+            worksheet.write(pg + index + 1, 1, company_name.strip())
+            worksheet.write(pg + index + 1, 2, skills.strip())
+            worksheet.write(pg + index + 1, 3, more_info)
+            worksheet.write(pg + index + 1, 4, job_descrp)
+
+    workbook.close()
