@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Playground</title>
+
+    <!-- <link rel="stylesheet" href="style.css">-->
+
+    <style>
+      body {
+        background-color: lightgrey;
+      }
+
+      .main_data {
+        text-align: center;
+        font-family: verdana;
+      }
+
+      #id {
+        font-family: verdana;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 15px;
+        font-size: 15px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #1190a7;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px #999;
+        width: 7%;
+      }
+
+      .btn:hover {
+        background-color: #0b606f;
+      }
+
+      .btn:active {
+        background-color: #3e8e41;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+      input[type="text"]:focus {
+        border: 3px solid #555;
+      }
+
+      #prompt {
+        width: 50%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border-color: lightgrey;
+      }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="main_data">
+      <h1>PLAYGROUND</h1>
+
+      <form id="form">
+        <input type="text" id="prompt" placeholder="Type to search anything " />
+        <button type="submit" name="button" class="btn">Search</button>
+      </form>
+    </div>
+
+    <div id="output"></div>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $("#form").on("submit", function (e) {
+          $.ajax({
+            data: {
+              prompt: $("#prompt").val(),
+            },
+            type: "POST",
+            url: "/",
+          }).done(function (data) {
+            $("#output").text(data.output).show();
+          });
+          e.preventDefault();
+        });
+      });
+    </script>
+  </body>
+</html>
